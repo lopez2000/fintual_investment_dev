@@ -1,69 +1,152 @@
-*.rbc
-capybara-*.html
-.rspec
-/db/*.sqlite3
-/db/*.sqlite3-journal
-/db/*.sqlite3-[0-9]*
-/public/system
-/coverage/
-/spec/tmp
-*.orig
-rerun.txt
-pickle-email-*.html
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
-
-# TODO Comment out this rule if you are OK with secrets being uploaded to the repo
-config/initializers/secret_token.rb
-config/master.key
-
-# Only include if you have production secrets in this file, which is no longer a Rails default
-# config/secrets.yml
-
-# dotenv, dotenv-rails
-# TODO Comment out these rules if environment variables can be committed
+# Virtual Environment
+venv/
+env/
+ENV/
 .env
-.env*.local
+.venv
+env.bak/
+venv.bak/
+pythonenv*
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
-## Environment normalization:
-/.bundle
-/vendor/bundle
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
+*.sublime-workspace
+*.sublime-project
 
-# these should all be checked in to normalize the environment:
-# Gemfile.lock, .ruby-version, .ruby-gemset
+# Testing
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+coverage/
+.pytest_cache/
 
-# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
-.rvmrc
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+.ipynb_checkpoints/
 
-# if using bower-rails ignore default bower_components path bower.json files
-/vendor/assets/bower_components
-*.bowerrc
-bower.json
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Ignore pow environment settings
-.powenv
+# Logs
+*.log
+logs/
+log/
 
-# Ignore Byebug command history file.
-.byebug_history
+# Local development
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
 
-# Ignore node_modules
-node_modules/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
 
-# Ignore precompiled javascript packs
-/public/packs
-/public/packs-test
-/public/assets
+# Project specific
+*.csv
+!returns.csv  # Keep the example data file
 
-# Ignore yarn files
-/yarn-error.log
-yarn-debug.log*
-.yarn-integrity
-
-# Ignore uploaded files in development
-/storage/*
-!/storage/.keep
-/public/uploads
+# Python specific
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.dylib
+*.dll
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.gz
+*.bz2
+*.xz
+*.lzma
+*.cab
+*.iso
+*.img
+*.vmdk
+*.vhd
+*.vhdx
+*.vdi
+*.vbox
+*.vbox-prev
+*.qcow2
+*.qcow
+*.raw
+*.img
+*.iso
