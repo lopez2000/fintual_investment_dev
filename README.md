@@ -1,134 +1,140 @@
-# Portfolio Optimization Service
+# Servicio de Optimización de Portafolio
 
-This service implements Modern Portfolio Theory (MPT) for optimizing investment portfolios using Markowitz mean-variance optimization to maximize the Sharpe ratio.
+Este servicio implementa Modern Portfolio Theory (MPT) para optimizar portafolios de inversión utilizando la optimización de media-varianza de Markowitz para maximizar el ratio de Sharpe.
 
-## Project Structure
+## Tabla de Contenidos
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Método de Optimización](#método-de-optimizacion)
+- [Supuestos Clave](#supuestos-clave)
+- [Uso de la API](#uso-de-la-api)
+- [Ejecución del Servicio](#ejecución-del-servicio)
+- [Ejecución de Pruebas](#ejecución-de-pruebas)
+- [Mejores Prácticas](#mejores-prácticas)
+- [Dependencias](#dependencias)
+
+## Estructura del Proyecto
 
 ```
 fintual_investment_dev/
 ├── app/
 │   ├── __init__.py
-│   ├── main.py           # FastAPI entrypoint
-│   ├── optimizer.py      # Portfolio optimization logic
-│   ├── schemas.py        # Pydantic models for request/response
-│   └── utils.py          # (Optional) Helper functions
+│   ├── main.py           # Endpoint FastAPI
+│   ├── optimizer.py      # Lógica de optimización de portafolio
+│   ├── schemas.py        # Modelos Pydantic para solicitudes/respuestas
+│   └── utils.py          # (Opcional) Funciones auxiliares
 ├── tests/
-│   └── test_optimizer.py # Unit tests
+│   └── test_optimizer.py # Pruebas unitarias
 ├── requirements.txt
 ├── README.md
-└── returns.csv           # Example data
+└── returns.csv           # Datos de ejemplo
 ```
 
-## Optimization Method
+## Método de Optimización
 
-The service implements a sophisticated portfolio optimization strategy based on Modern Portfolio Theory (MPT) with the following key features:
+El servicio implementa una estrategia basada en la Modern Portfolio Theory (MPT) con las siguientes características:
 
-### 1. Sharpe Ratio Maximization
-- The optimizer maximizes the Sharpe ratio, which measures risk-adjusted returns
-- This approach balances both return and risk, rather than just maximizing returns
-- The Sharpe ratio is calculated as: (Portfolio Return - Risk-Free Rate) / Portfolio Volatility
+### 1. Maximización del Ratio de Sharpe
+- El optimizador maximiza el ratio de Sharpe, que mide los retornos ajustados al riesgo.
+- El ratio de Sharpe se calcula como: `(wᵀμ - rf) / √(wᵀΣw)`.
+- Por simplicidad, asumimos una tasa libre de riesgo de `rf = 0`.
 
-### 2. Implementation Details
-- Uses the Sequential Least Squares Programming (SLSQP) algorithm for optimization
-- Implements the following constraints:
-  - Full investment (weights sum to 1)
-  - No short selling (weights ≥ 0)
-  - Maximum weight per asset (user-defined)
-  - Target risk level (user-defined volatility)
+### 2. Restricciones Implementadas
+- Los pesos deben sumar 1 (inversión total).
+- Pesos entre 0 y un valor máximo definido por el usuario (`max_weight`).
+- La volatilidad del portafolio no debe exceder el `risk_level` especificado por el usuario.
 
-### 3. Why This Approach?
-1. **Risk-Adjusted Returns**: By maximizing the Sharpe ratio, we focus on efficient portfolios that provide the best return per unit of risk
-2. **Practical Constraints**: The implementation includes real-world constraints like maximum position sizes and no short selling
-3. **Flexibility**: Users can adjust risk levels and maximum weights to match their investment preferences
-4. **Robustness**: The SLSQP algorithm is well-suited for constrained optimization problems with non-linear objectives
+### 3. Algoritmo
+- Se utiliza el método SLSQP (Sequential Least Squares Programming) de `scipy.optimize.minimize`, adecuado para problemas con restricciones no lineales.
 
-### 4. Mathematical Formulation
-The optimization problem is formulated as:
-```
-maximize: (w'μ - rf) / √(w'Σw)
-subject to:
-    w'1 = 1
-    0 ≤ w ≤ max_weight
-    √(w'Σw) ≤ risk_level
-```
-where:
-- w: vector of portfolio weights
-- μ: vector of expected returns
-- Σ: covariance matrix
-- rf: risk-free rate
-- max_weight: maximum allowed weight per asset
-- risk_level: target portfolio volatility
+### 4. Justificación del Modelo
 
-## API Usage
+La elección de este modelo de optimización se basa en varios factores clave:
 
-- **Endpoint:** `/optimize-portfolio` (POST)
-- **Input:**
-  - `file`: CSV file with daily returns (first column: date, other columns: asset returns)
-  - `risk_level`: Target portfolio volatility (float)
-  - `max_weight`: Maximum weight per asset (float)
-- **Response:**
-  - JSON with the optimal portfolio weights
+1. **Eficiencia de Mercado**:
+   - Modern Portfolio Theory (MPT) es un marco teórico probado y validado que ha demostrado su efectividad en mercados eficientes.
+   - El enfoque de media-varianza proporciona una base sólida para la toma de decisiones de inversión.
 
-### Example Request (using `curl`):
+2. **Balance entre Riesgo y Retorno**:
+   - La maximización del ratio de Sharpe asegura que obtenemos el mejor retorno posible por unidad de riesgo asumido.
+   - Este enfoque es particularmente útil para inversores que buscan optimizar su perfil de riesgo-retorno.
 
-```
+3. **Flexibilidad y Control**:
+   - El modelo permite un control sobre el riesgo a través del parámetro `risk_level`.
+   - La restricción de `max_weight` ayuda a prevenir la concentración excesiva en un solo activo.
+   - Estas restricciones hacen que el modelo sea adaptable a diferentes perfiles de riesgo y políticas de inversión.
+
+4. **Robustez Computacional**:
+   - El algoritmo SLSQP es particularmente adecuado para este tipo de optimización porque:
+     - Maneja eficientemente restricciones no lineales.
+     - Es estable numéricamente.
+     - Converge de manera confiable a soluciones óptimas.
+     - Puede manejar portafolios con un gran número de activos.
+
+5. **Implementación Práctica**:
+   - El modelo es relativamente simple de implementar y mantener.
+   - La optimización es eficiente, permitiendo actualizaciones frecuentes del portafolio.
+
+## Supuestos Clave
+
+- La tasa libre de riesgo es 0.
+- Se asume que los retornos están limpios y correctamente formateados.
+- Los retornos siguen una distribución aproximadamente normal.
+- El riesgo del portafolio se controla explícitamente con una restricción de volatilidad (`risk_level`).
+
+## Uso de la API
+
+- **Endpoint:** `POST /optimize-portfolio`
+- **Entrada:**
+  - `file`: archivo CSV con retornos históricos (fecha en la primera columna, activos en columnas siguientes).
+  - `risk_level`: nivel máximo de riesgo (volatilidad diaria).
+  - `max_weight`: peso máximo permitido por activo.
+- **Respuesta:**
+  ```json
+  {
+    "optimal_portfolio": {
+      "ticker_1": peso_1,
+      "ticker_2": peso_2,
+      ...
+    }
+  }
+  ```
+
+### Ejemplo con `curl`
+
+```bash
 curl -X POST "http://127.0.0.1:8000/optimize-portfolio" \
   -H "accept: application/json" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@returns.csv;type=text/csv" \
   -F "risk_level=0.15" \
-  -F "max_weight=0.4"
+  -F "max_weight=0.3"
 ```
 
-### Example Response
+## Ejecución del Servicio
 
-```
-{
-  "optimal_portfolio": {
-    "SPY US Equity": 0.2,
-    "QQQ US Equity": 0.4,
-    "IWM US Equity": 0.4
-  }
-}
+1. Instala dependencias:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## Running the Service
-
-1. **Install dependencies:**
-   ```
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
-2. **Start the server:**
-   ```
-   uvicorn app.main:app --reload
-   ```
-
-## Running Tests
-
-Unit tests are provided using `pytest`:
-
+2. Inicia el servidor:
+```bash
+uvicorn app.main:app --reload
 ```
+
+## Ejecución de Pruebas
+
+```bash
 pytest
 ```
 
-## Best Practices
-- Modular code: Business logic is separated from API logic
-- Type annotations and docstrings throughout
-- Robust error handling and logging
-- Automated tests for reliability
-- Professional project structure and `.gitignore`
+## Dependencias
 
-## Dependencies
-- fastapi: Modern web framework for building APIs
-- pandas: Data manipulation and analysis
-- numpy: Numerical computing
-- scipy: Scientific computing and optimization
-- uvicorn: ASGI server
-- python-multipart: File upload handling
-- pytest: Testing framework
-
----
-
-**For more about the role and expectations, see the [Fintual Investment Solutions Developer job description](https://jobs.lever.co/fintual/5962de0a-328f-4889-a9ff-cf2a171f2e18).**
+- `fastapi`: framework web para APIs.
+- `pandas`, `numpy`: análisis y procesamiento numérico.
+- `scipy`: optimización científica.
+- `uvicorn`: servidor ASGI.
+- `python-multipart`: manejo de archivos subidos.
+- `pytest`: pruebas unitarias.
